@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/mvchan/fso2020_part9/issues"
   },
-  "homepage": "https://github.com/mvchan/fso2020_part9#readme"
+  "homepage": "https://github.com/mvchan/fso2020_part9#readme",
+  "scripts": {
+    "ts-node": "ts-node"
+  }
 }
