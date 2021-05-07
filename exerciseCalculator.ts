@@ -16,7 +16,6 @@ const parseExerciseCalcArguments = (args: Array<string>): Hours => {
     
     // first two arguments will be "run" and "calculateExercises"
     if (args.length < 3) throw new Error('Not enough arguments');
-    if (args.length > 9) throw new Error('Too many arguments');
 
     const hours = [];
     for (let i = 2; i < args.length; i++) {
@@ -32,6 +31,9 @@ const parseExerciseCalcArguments = (args: Array<string>): Hours => {
 
 const calculateExercises = (hours: Array<number>) : Result => {
     
+    // first value from arguments is the target
+    const target = hours.shift();
+
     const periodLength = hours.length;
 
     const trainingDays = hours.reduce((accum, currentValue) => {
@@ -62,9 +64,7 @@ const calculateExercises = (hours: Array<number>) : Result => {
 
     const average = hours.reduce((accum, currentValue) => accum + currentValue) / periodLength;
 
-    const target = 2;
-    
-    const success = rating >= target ? true : false;
+    const success = average >= target ? true : false;
 
     return {
         periodLength,
