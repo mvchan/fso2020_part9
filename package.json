@@ -6,7 +6,9 @@
   "scripts": {
     "ts-node": "ts-node",
     "calculateBmi": "ts-node bmiCalculator.ts",
-	"calculateExercises": "ts-node exerciseCalculator.ts"
+    "calculateExercises": "ts-node exerciseCalculator.ts",
+    "start": "ts-node index.ts",
+	"dev": "ts-node-dev index.ts"
   },
   "repository": {
     "type": "git",
@@ -19,8 +21,13 @@
   },
   "homepage": "https://github.com/mvchan/fso2020_part9#readme",
   "devDependencies": {
+    "@types/express": "^4.17.11",
     "@types/node": "^15.0.2",
     "ts-node": "^9.1.1",
+    "ts-node-dev": "^1.1.6",
     "typescript": "^4.2.4"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
   }
 }
