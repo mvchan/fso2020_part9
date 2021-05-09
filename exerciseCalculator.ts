@@ -32,7 +32,7 @@ const parseExerciseCalcArguments = (args: Array<string>): Hours => {
 const calculateExercises = (hours: Array<number>) : Result => {
     
     // first value from arguments is the target
-    const target = hours.shift();
+    const target = hours.shift() || 0;
 
     const periodLength = hours.length;
 
@@ -60,6 +60,7 @@ const calculateExercises = (hours: Array<number>) : Result => {
             ratingDescription = 'Awesome';
             break;
         default:
+            ratingDescription = '';
     }
 
     const average = hours.reduce((accum, currentValue) => accum + currentValue) / periodLength;
@@ -83,3 +84,5 @@ try {
 } catch (e) {
     console.log('Error: ', e.message);
 }
+
+export { calculateExercises };

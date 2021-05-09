@@ -36,3 +36,5 @@ try {
 } catch (e) {
     console.log('Error: ', e.message);
 }
+
+export { calculateBMI };
