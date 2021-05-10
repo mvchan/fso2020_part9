@@ -15,7 +15,7 @@ const parseArguments = (args: Array<string>): DivideValues => {
     } else {
         throw new Error('Provided values were not numbers!');
     }
-}
+};
 
 const calculateBMI = (height_in_cm: number, weight_in_kg: number) : string => {
     const BMI = weight_in_kg / Math.pow((height_in_cm / 100), 2);
@@ -23,18 +23,21 @@ const calculateBMI = (height_in_cm: number, weight_in_kg: number) : string => {
     if (BMI < 18.5)
         return 'Underweight';
     else if (BMI >= 18.5 && BMI <= 24.9)
-        return 'Normal (healthy weight)'
+        return 'Normal (healthy weight)';
     else if (BMI > 24.9 && BMI <= 29.9)
-        return 'Overweight'
+        return 'Overweight';
     else
-        return 'Obesity'
-}
+        return 'Obesity';
+};
 
 try {
     const { value1, value2 } = parseArguments(process.argv);
     console.log(calculateBMI(value1, value2));
 } catch (e) {
-    console.log('Error: ', e.message);
+    if (e instanceof Error)
+        console.log('Error: ', e.message);
+    else
+        console.log('Error: no message available');
 }
 
 export { calculateBMI };

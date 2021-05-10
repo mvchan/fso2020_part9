@@ -26,8 +26,8 @@ const parseExerciseCalcArguments = (args: Array<string>): Hours => {
         }
     }
 
-    return { hours }
-}
+    return { hours };
+};
 
 const calculateExercises = (hours: Array<number>) : Result => {
     
@@ -75,14 +75,17 @@ const calculateExercises = (hours: Array<number>) : Result => {
         ratingDescription,
         target,
         average
-    }
-}
+    };
+};
 
 try {
     const { hours } = parseExerciseCalcArguments(process.argv);
     console.log(calculateExercises(hours));
 } catch (e) {
-    console.log('Error: ', e.message);
+    if (e instanceof Error)
+        console.log('Error: ', e.message);
+    else
+        console.log('Error: no message available');
 }
 
 export { calculateExercises };
