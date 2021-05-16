@@ -1,4 +1,4 @@
-import patientData from '../../data/patients';
+import patientData from '../../data/patientsData';
 import { Patient, RedactedPatient } from '../types';
 
 const patients : Patient[] = patientData;
@@ -23,8 +23,14 @@ const addEntry = () => {
     return null;
 };
 
+const findById = (id : string): Patient | undefined => {
+    const entry = patients.find(d => d.id === id);
+    return entry;
+};
+
 export default {
     getEntries,
     addEntry,
-    getNonSensitiveEntries
+    getNonSensitiveEntries,
+    findById
 };
