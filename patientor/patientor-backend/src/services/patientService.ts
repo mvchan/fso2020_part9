@@ -4,9 +4,6 @@ import {v1 as uuid} from 'uuid';
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-const id : string = uuid();
-
 const patients : Patient[] = patientData;
 
 const getEntries = () : Patient[] => {
@@ -27,13 +24,16 @@ const getNonSensitiveEntries = () : RedactedPatient[] => {
 
 const addPatient = (entry : NewPatient): Patient => {
 
-  const newPatient : Patient = {
-    id,
-    ...entry
-  };
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const id : string = uuid();
 
-  patients.push(newPatient);
-  return newPatient;
+    const newPatient : Patient = {
+        id,
+        ...entry
+    };
+
+    patients.push(newPatient);
+    return newPatient;
 };
 
 const findById = (id : string): Patient | undefined => {
