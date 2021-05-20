@@ -1,11 +1,14 @@
 import React from 'react';
+import Part from './Part';
+import { CoursePart } from '../types';
 
 // less verbose syntax for defining interface type for props
-const Content = ( { courseParts } : { courseParts : { name: string, exerciseCount: number }[] } ) => (
+const Content = ( { courseParts } : { courseParts: CoursePart[] }) => (
     <>
         {courseParts.map(course => (
             <p key={course.name}>
-                {course.name} {course.exerciseCount}
+                <b>{course.name} {course.exerciseCount}</b>
+                <br /><Part course={course} />
             </p>
         ))}
     </>
