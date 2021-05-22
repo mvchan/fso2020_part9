@@ -5,7 +5,8 @@ type PatientFields = {
     dateOfBirth : unknown,
     ssn : unknown,
     gender : unknown,
-    occupation : unknown
+    occupation : unknown,
+    entries? : unknown[]
 };
 
 const toNewPatient = ({ name, dateOfBirth, ssn, gender, occupation } : PatientFields): NewPatient => {
@@ -15,6 +16,7 @@ const toNewPatient = ({ name, dateOfBirth, ssn, gender, occupation } : PatientFi
     ssn: parseString(ssn),
     gender: parseGender(gender),
     occupation: parseString(occupation),
+    entries: []
   };
 
   return newEntry;

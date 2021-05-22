@@ -1,5 +1,5 @@
 import patientData from '../../data/patientsData';
-import { Patient, RedactedPatient, NewPatient } from '../types';
+import { Patient, PublicPatient, NewPatient } from '../types';
 import {v1 as uuid} from 'uuid';
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -12,7 +12,7 @@ const getEntries = () : Patient[] => {
 
 // since excess fields are not prohibited from being returned, patients 
 // should be mapped to include all fields except SSN or other sensitive data
-const getNonSensitiveEntries = () : RedactedPatient[] => {
+const getNonSensitiveEntries = () : PublicPatient[] => {
     return patients.map(({ id, name, dateOfBirth, gender, occupation }) => ({
         id,
         name,
