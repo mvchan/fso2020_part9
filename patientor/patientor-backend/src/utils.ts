@@ -1,4 +1,4 @@
-import { NewPatient, Gender } from './types';
+import { NewPatient, Gender, EntryTypes, Entry } from './types';
 
 type PatientFields = { 
     name : unknown,
@@ -9,14 +9,14 @@ type PatientFields = {
     entries? : unknown[]
 };
 
-const toNewPatient = ({ name, dateOfBirth, ssn, gender, occupation } : PatientFields): NewPatient => {
+const toNewPatient = ({ name, dateOfBirth, ssn, gender, occupation, entries } : PatientFields): NewPatient => {
   const newEntry : NewPatient = {
     name: parseString(name),
     dateOfBirth: parseDate(dateOfBirth),
     ssn: parseString(ssn),
     gender: parseGender(gender),
     occupation: parseString(occupation),
-    entries: []
+    entries: entries ? parseEntries(entries) : []
   };
 
   return newEntry;
@@ -57,6 +57,28 @@ const parseGender = (gender : unknown): Gender => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isGender = (param : any) : param is Gender => {
     return Object.values(Gender).includes(param);
+};
+
+const parseEntries = (entries : unknown[]) : Entry[] => {
+    if (!entries || !isValidEntries(entries)) {
+        throw new Error('Incorrect or missing entries: ' + entries);
+    }
+
+    return entries;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isValidEntries = (param : any[]) : param is Entry[] => {
+
+    let result = true;
+
+    param.forEach((element : Entry) => {
+        if (!Object.values(EntryTypes).includes(element.type))
+            result = false;
+    });
+
+    return result;
+    
 };
 
 export default toNewPatient;
