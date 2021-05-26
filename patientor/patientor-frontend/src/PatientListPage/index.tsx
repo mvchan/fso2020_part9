@@ -11,6 +11,8 @@ import { useStateValue } from "../state";
 
 import { Link } from "react-router-dom";
 
+import { addPatient } from "../state/reducer";
+
 const PatientListPage = () => {
   const [{ patients }, dispatch] = useStateValue();
 
@@ -30,7 +32,7 @@ const PatientListPage = () => {
         `${apiBaseUrl}/api/patients`,
         values
       );
-      dispatch({ type: "ADD_PATIENT", payload: newPatient });
+      dispatch(addPatient(newPatient));
       closeModal();
     } catch (e) {
       console.error(e.response?.data || 'Unknown Error');
