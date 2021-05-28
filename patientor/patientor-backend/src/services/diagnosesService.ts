@@ -1,9 +1,9 @@
 import diagnosesData from '../../data/diagnosesData';
-import { Diagnose } from '../types';
+import { Diagnosis } from '../types';
 
-const diagnoses : Array<Diagnose> = diagnosesData;
+const diagnoses : Array<Diagnosis> = diagnosesData;
 
-const getEntries = () : Array<Diagnose> => {
+const getEntries = () : Array<Diagnosis> => {
     return diagnoses;
 };
 
@@ -11,7 +11,7 @@ const addEntry = () => {
     return null;
 };
 
-const findByCode = (code : string): Diagnose | undefined => {
+const findByCode = (code : string): Diagnosis | undefined => {
     const entry = diagnoses.find(d => d.code === code);
     return entry;
 };
