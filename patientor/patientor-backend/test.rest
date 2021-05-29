@@ -1,0 +1,16 @@
+###
+GET http://localhost:3001/api/patients
+
+
+
+###
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+  "name": "Venti",
+  "dateOfBirth": "2021-5-17",
+  "ssn": "123-45-6789",
+  "gender": "male",
+  "occupation": "Bard"
+}
