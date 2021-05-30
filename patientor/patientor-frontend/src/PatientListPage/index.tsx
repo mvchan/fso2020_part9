@@ -55,11 +55,11 @@ const PatientListPage = () => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {Object.values(patients).map((patient: Patient) => (
-            <Table.Row key={patient.id}>
-              <Table.Cell><Link to={`/patients/${patient.id}`}>{patient.name}</Link></Table.Cell>
-              <Table.Cell>{patient.gender}</Table.Cell>
-              <Table.Cell>{patient.occupation}</Table.Cell>
+          {Object.values(patients).map((patient : Patient | undefined) => (
+            <Table.Row key={patient?.id}>
+              <Table.Cell><Link to={`/patients/${patient !== undefined ? patient?.id : ''}`}>{patient?.name}</Link></Table.Cell>
+              <Table.Cell>{patient?.gender}</Table.Cell>
+              <Table.Cell>{patient?.occupation}</Table.Cell>
               <Table.Cell>
                 <HealthRatingBar showText={false} rating={1} />
               </Table.Cell>
