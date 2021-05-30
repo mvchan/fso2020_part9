@@ -1,0 +1,8 @@
+{
+  "eslint.workingDirectories": [
+	"./calculators",
+	"./my-app",
+    "./patientor/patientor-frontend",
+	"./patientor/patientor-backend"
+  ]
+}
