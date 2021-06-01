@@ -9,24 +9,32 @@ router.get('/', (_req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-    const patient = patientService.findById(req.params.id);
-  
-    if (patient) {
-      res.send(patient);
-    } else {
-      res.sendStatus(404);
-    }
+  const patient = patientService.findById(req.params.id);
+
+  if (patient) {
+    res.send(patient);
+  } else {
+    res.sendStatus(404);
   }
-);
+});
 
 router.post('/', (req, res) => {
-    try {
-        const newPatient = toNewPatient(req.body);
-        const addedPatient = patientService.addPatient(newPatient);
-        res.json(addedPatient);
-    } catch (e) {
-        res.status(400).send(e.message);
-    }
+  try {
+      const newPatient = toNewPatient(req.body);
+      const addedPatient = patientService.addPatient(newPatient);
+      res.json(addedPatient);
+  } catch (e) {
+      res.status(400).send(e.message);
+  }
 });
+
+// router.post('/:id', (req, res) => {
+//   try {
+//       const patient = patientService.findById(req.params.id);
+//       res.json(patient);
+//   } catch (e) {
+//       res.status(400).send(e.message);
+//   }
+// });
 
 export default router;
