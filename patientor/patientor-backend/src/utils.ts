@@ -68,17 +68,81 @@ const parseEntries = (entries : unknown[]) : Entry[] => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isValidEntries = (param : any[]) : param is Entry[] => {
+const isValidEntries = (param : any[]) : boolean => {
 
     let result = true;
 
     param.forEach((element : Entry) => {
         if (!Object.values(EntryTypes).includes(element.type))
             result = false;
+
+        switch (element.type) {
+            case "Hospital":
+                result = isString(element.id) ||
+                        isString(element.description) ||
+                        isDate(element.date) ||
+                        isString(element.specialist) ||
+                        (element.diagnosisCodes ? isDiagnosisCodes(element.diagnosisCodes) : true) ||
+                        isEntryType(element.type) ||
+                        isString(element.discharge.date) ||
+                        isString(element.discharge.criteria);
+                
+                break;
+            // case "HealthCheck":
+            //     newEntry = {
+            //     id: body.id,
+            //     description: body.description,
+            //     date: body.date,
+            //     specialist: body.specialist,
+            //     diagnosisCodes: body.diagnosisCodes,
+            //     type: "HealthCheck",
+            //     healthCheckRating: body.healthCheckRating
+            //     };
+            //     break;
+            // case "OccupationalHealthcare":
+            //     newEntry = {
+            //     id: body.id,
+            //     description: body.description,
+            //     date: body.date,
+            //     specialist: body.specialist,
+            //     diagnosisCodes: body.diagnosisCodes,
+            //     type: "OccupationalHealthcare",
+            //     employerName: body.employerName,
+            //     sickLeave: body.sickLeave
+            //     };
+            //     break;
+            default:
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                result = false;
+            }
     });
 
     return result;
     
+};
+
+const parseEntryTypes = (entryType : unknown): EntryTypes => {
+    if (!entryType || !isEntryType(entryType)) {
+        throw new Error('Incorrect or missing entry type: ' + entryType);
+    }
+    return entryType;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isEntryType = (param : any) : param is EntryTypes => {
+    return Object.values(EntryTypes).includes(param);
+};
+
+const parseDiagnosisCodes = (codes : unknown) : string[] => {
+    if (!codes || !isDiagnosisCodes(codes)) {
+        throw new Error('Incorrect or missing diagnosis codes: ' + codes);
+    }
+
+    return codes;
+};
+
+const isDiagnosisCodes = (param : unknown) : param is string[] => {
+    return Array.isArray(param);
 };
 
 export default toNewPatient;
