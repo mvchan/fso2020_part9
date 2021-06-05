@@ -1,4 +1,4 @@
-import { NewPatient, Gender, EntryTypes, Entry } from './types';
+import { NewPatient, Gender, EntryTypes, Entry, HealthCheckRating } from './types';
 
 type PatientFields = { 
     name : unknown,
@@ -10,16 +10,19 @@ type PatientFields = {
 };
 
 const toNewPatient = ({ name, dateOfBirth, ssn, gender, occupation, entries } : PatientFields): NewPatient => {
-  const newEntry : NewPatient = {
-    name: parseString(name),
-    dateOfBirth: parseDate(dateOfBirth),
-    ssn: parseString(ssn),
-    gender: parseGender(gender),
-    occupation: parseString(occupation),
-    entries: entries ? parseEntries(entries) : []
-  };
+    
+    const emptyEntries : Entry[] = [];
 
-  return newEntry;
+    const newPatient : NewPatient = {
+        name: parseString(name),
+        dateOfBirth: parseDate(dateOfBirth),
+        ssn: parseString(ssn),
+        gender: parseGender(gender),
+        occupation: parseString(occupation),
+        entries : entries ? parseEntries(entries) : emptyEntries
+    };
+
+    return newPatient;
 };
 
 // STRING PARSING
@@ -59,7 +62,7 @@ const isGender = (param : any) : param is Gender => {
     return Object.values(Gender).includes(param);
 };
 
-const parseEntries = (entries : unknown[]) : Entry[] => {
+export const parseEntries = (entries : unknown) : Entry[] => {
     if (!entries || !isValidEntries(entries)) {
         throw new Error('Incorrect or missing entries: ' + entries);
     }
@@ -68,81 +71,100 @@ const parseEntries = (entries : unknown[]) : Entry[] => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isValidEntries = (param : any[]) : boolean => {
+const isValidEntries = (param : any) : param is Entry[] => {
 
     let result = true;
 
-    param.forEach((element : Entry) => {
-        if (!Object.values(EntryTypes).includes(element.type))
-            result = false;
+    if (param.length)
+        return result;
 
-        switch (element.type) {
-            case "Hospital":
-                result = isString(element.id) ||
-                        isString(element.description) ||
-                        isDate(element.date) ||
-                        isString(element.specialist) ||
-                        (element.diagnosisCodes ? isDiagnosisCodes(element.diagnosisCodes) : true) ||
-                        isEntryType(element.type) ||
-                        isString(element.discharge.date) ||
-                        isString(element.discharge.criteria);
-                
-                break;
-            // case "HealthCheck":
-            //     newEntry = {
-            //     id: body.id,
-            //     description: body.description,
-            //     date: body.date,
-            //     specialist: body.specialist,
-            //     diagnosisCodes: body.diagnosisCodes,
-            //     type: "HealthCheck",
-            //     healthCheckRating: body.healthCheckRating
-            //     };
-            //     break;
-            // case "OccupationalHealthcare":
-            //     newEntry = {
-            //     id: body.id,
-            //     description: body.description,
-            //     date: body.date,
-            //     specialist: body.specialist,
-            //     diagnosisCodes: body.diagnosisCodes,
-            //     type: "OccupationalHealthcare",
-            //     employerName: body.employerName,
-            //     sickLeave: body.sickLeave
-            //     };
-            //     break;
-            default:
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                result = false;
-            }
-    });
+    if (Array.isArray(param)) {
+        param.forEach((element : Entry) => {
+            result = result && isValidEntry(element);
+        });
+    }
 
     return result;
     
 };
 
-const parseEntryTypes = (entryType : unknown): EntryTypes => {
-    if (!entryType || !isEntryType(entryType)) {
-        throw new Error('Incorrect or missing entry type: ' + entryType);
+export const isValidEntry = (element : Entry) : element is Entry => {
+
+    let result = true;
+
+    if (!Object.values(EntryTypes).includes(element.type)) {
+        result = result && false;
     }
-    return entryType;
+        
+    result = result && isString(element.id) &&
+        isString(element.description) &&
+        isDate(element.date) &&
+        isString(element.specialist) &&
+        (element.diagnosisCodes ? isDiagnosisCodes(element.diagnosisCodes) : true);
+
+    switch (element.type) {
+        case "Hospital":
+            result = result &&
+                isEntryType(element.type) &&
+                isString(element.discharge.date) &&
+                isString(element.discharge.criteria);
+            break;
+        case "HealthCheck":
+            result = result &&
+                isEntryType(element.type) &&
+                isHealthCheckRating(element.healthCheckRating);
+            break;
+        case "OccupationalHealthcare":
+            result = result &&
+                isEntryType(element.type) &&
+                isString(element.employerName) &&
+                isString(element.employerName) &&
+                (element.sickLeave ? isSickLeave(element.sickLeave) : true);
+            break;
+        default:
+            result = false;
+    }
+
+    return result;
 };
+
+// const parseEntryTypes = (entryType : unknown): EntryTypes => {
+//     if (!entryType || !isEntryType(entryType)) {
+//         throw new Error('Incorrect or missing entry type: ' + entryType);
+//     }
+//     return entryType;
+// };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isEntryType = (param : any) : param is EntryTypes => {
     return Object.values(EntryTypes).includes(param);
 };
 
-const parseDiagnosisCodes = (codes : unknown) : string[] => {
-    if (!codes || !isDiagnosisCodes(codes)) {
-        throw new Error('Incorrect or missing diagnosis codes: ' + codes);
-    }
+// const parseDiagnosisCodes = (codes : unknown) : string[] => {
+//     if (!codes || !isDiagnosisCodes(codes)) {
+//         throw new Error('Incorrect or missing diagnosis codes: ' + codes);
+//     }
 
-    return codes;
-};
+//     return codes;
+// };
 
 const isDiagnosisCodes = (param : unknown) : param is string[] => {
     return Array.isArray(param);
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isHealthCheckRating = (param : any) : param is HealthCheckRating => {
+    return Object.values(Gender).includes(param);
+};
+
+type SickLeave = {
+    startDate : string,
+    endDate : string
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isSickLeave = (param : any) : param is SickLeave => {
+    return isDate(param.startDate) && isDate(param.endDate);
 };
 
 export default toNewPatient;

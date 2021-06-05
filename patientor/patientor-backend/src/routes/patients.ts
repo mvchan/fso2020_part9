@@ -33,56 +33,15 @@ router.post('/:id/entries', (req, res) => {
     const patient = patientService.findById(req.params.id);
 
     if (patient) {
-
-      let newEntry : Entry | undefined = undefined;
-
       const body : Entry = req.body as Entry;
-      
-      switch (body.type) {
-        case "Hospital":
-          newEntry = {
-            id: body.id,
-            description: body.description,
-            date: body.date,
-            specialist: body.specialist,
-            diagnosisCodes: body.diagnosisCodes,
-            type: "Hospital",
-            discharge: body.discharge
-          };
-          break;
-        case "HealthCheck":
-          newEntry = {
-            id: body.id,
-            description: body.description,
-            date: body.date,
-            specialist: body.specialist,
-            diagnosisCodes: body.diagnosisCodes,
-            type: "HealthCheck",
-            healthCheckRating: body.healthCheckRating
-          };
-          break;
-        case "OccupationalHealthcare":
-          newEntry = {
-            id: body.id,
-            description: body.description,
-            date: body.date,
-            specialist: body.specialist,
-            diagnosisCodes: body.diagnosisCodes,
-            type: "OccupationalHealthcare",
-            employerName: body.employerName,
-            sickLeave: body.sickLeave
-          };
-          break;
-        default:
-          res.sendStatus(404);
-      }
+
+      const newEntry : Entry | undefined = patientService.addEntry(patient,body);
 
       if (newEntry !== undefined) {
-        patient.entries.push(newEntry);
-        res.json(patient);
+        res.json(newEntry);
       }
       else
-        res.sendStatus(404);
+        res.sendStatus(400);
     } else {
       res.sendStatus(404);
     }

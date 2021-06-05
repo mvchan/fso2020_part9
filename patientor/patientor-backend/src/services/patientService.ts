@@ -1,6 +1,7 @@
 import patientData from '../../data/patientsData';
-import { Patient, PublicPatient, NewPatient } from '../types';
+import { Patient, PublicPatient, NewPatient, Entry } from '../types';
 import {v1 as uuid} from 'uuid';
+import { isValidEntry } from '../utils';
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
@@ -41,9 +42,60 @@ const findById = (id : string): Patient | undefined => {
     return entry;
 };
 
+const addEntry = (currentPatient : Patient, reqBody : Entry) : Entry | undefined => {
+    let newEntry : Entry | undefined = undefined;
+    
+    switch (reqBody.type) {
+      case "Hospital":
+        newEntry = {
+          id: uuid(),
+          description: reqBody.description,
+          date: reqBody.date,
+          specialist: reqBody.specialist,
+          diagnosisCodes: reqBody.diagnosisCodes,
+          type: "Hospital",
+          discharge: reqBody.discharge
+        };
+        break;
+      case "HealthCheck":
+        newEntry = {
+          id: uuid(),
+          description: reqBody.description,
+          date: reqBody.date,
+          specialist: reqBody.specialist,
+          diagnosisCodes: reqBody.diagnosisCodes,
+          type: "HealthCheck",
+          healthCheckRating: reqBody.healthCheckRating
+        };
+        break;
+      case "OccupationalHealthcare":
+        newEntry = {
+          id: uuid(),
+          description: reqBody.description,
+          date: reqBody.date,
+          specialist: reqBody.specialist,
+          diagnosisCodes: reqBody.diagnosisCodes,
+          type: "OccupationalHealthcare",
+          employerName: reqBody.employerName,
+          sickLeave: reqBody.sickLeave
+        };
+        break;
+      default:
+    }
+
+    const patientToUpdate = patients.find(d => d.id === currentPatient.id);
+
+    if (patientToUpdate !== undefined && newEntry !== undefined && isValidEntry(newEntry)) {
+        patientToUpdate.entries.push(newEntry);
+    }
+
+    return newEntry;
+};
+
 export default {
     getEntries,
     addPatient,
     getNonSensitiveEntries,
-    findById
+    findById,
+    addEntry
 };
