@@ -1,11 +1,16 @@
 import React from "react";
+import axios from "axios";
 import { useParams } from "react-router-dom";
 import { useStateValue } from "../state";
-import { Icon } from "semantic-ui-react";
+import { Icon, Button } from "semantic-ui-react";
 import { Entry } from '../types';
 import HospitalEntry from './HospitalEntry';
 import HealthCheckEntry from "./HealthCheckEntry";
 import OccupationalHealthcareEntry from "./OccupationalHealthcareEntry";
+import AddEntryModal from "../AddEntryModal";
+import { EntryFormValues } from "../AddEntryModal/AddEntryForm";
+import { apiBaseUrl } from "../constants";
+import { addEntry } from "../state/reducer";
 
 const assertNever = (value : never): never => {
     throw new Error(
@@ -30,9 +35,40 @@ const EntryDetails : React.FC<{ entry : Entry } > = ({ entry }) => {
 const PatientDetail = () => {
 
     const { id } = useParams<{ id: string }>();
-    const [{ patients },] = useStateValue();
+    const [{ patients }, dispatch] = useStateValue();
 
     const patient = patients[id];
+
+    // START MODAL CODE
+    const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+    const [error, setError] = React.useState<string | undefined>();
+    const openModal = (): void => setModalOpen(true);
+
+    const closeModal = (): void => {
+      setModalOpen(false);
+      setError(undefined);
+    };
+
+    const submitNewEntry = async (values: EntryFormValues) => {
+        try {
+          const { data: newEntry } = await axios.post<Entry>(
+            `${apiBaseUrl}/api/patients/${id}/entries`,
+            values
+          );
+
+          console.log(newEntry);
+
+          if (patient !== undefined) {
+            dispatch(addEntry(patient,newEntry));
+          }
+
+          closeModal();
+        } catch (e) {
+          console.error(e.response?.data || 'Unknown Error');
+          setError(e.response?.data?.error || 'Unknown error');
+        }
+    };
+    // END MODAL CODE
 
     if (!patient || patient === undefined)
         return null;
@@ -49,6 +85,13 @@ const PatientDetail = () => {
                     <EntryDetails key={entry.id} entry={entry} /> 
                 )}
             </div>
+            <AddEntryModal
+                modalOpen={modalOpen}
+                onSubmit={submitNewEntry}
+                error={error}
+                onClose={closeModal}
+            />
+            <Button onClick={() => openModal()}>Add New Entry</Button>
         </div>
     );
 };

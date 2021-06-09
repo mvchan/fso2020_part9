@@ -5,7 +5,7 @@ import { isValidEntry } from '../utils';
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-const patients : Patient[] = patientData;
+let patients : Patient[] = patientData;
 
 const getEntries = () : Patient[] => {
     return patients;
@@ -87,6 +87,11 @@ const addEntry = (currentPatient : Patient, reqBody : Entry) : Entry | undefined
 
     if (patientToUpdate !== undefined && newEntry !== undefined && isValidEntry(newEntry)) {
         patientToUpdate.entries.push(newEntry);
+        patients = patients.filter(d => d.id !== currentPatient.id);
+        patients.push(patientToUpdate);
+    } else {
+        console.log ('Patient failed backend update');
+        throw new Error('Patient failed backend update');
     }
 
     return newEntry;

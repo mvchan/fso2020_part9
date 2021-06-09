@@ -125,6 +125,9 @@ export const isValidEntry = (element : Entry) : element is Entry => {
             result = false;
     }
 
+    if (!result)
+        throw new Error('Entry is not valid: ' + element);
+
     return result;
 };
 
@@ -154,7 +157,7 @@ const isDiagnosisCodes = (param : unknown) : param is string[] => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isHealthCheckRating = (param : any) : param is HealthCheckRating => {
-    return Object.values(Gender).includes(param);
+    return Object.values(HealthCheckRating).includes(param);
 };
 
 type SickLeave = {

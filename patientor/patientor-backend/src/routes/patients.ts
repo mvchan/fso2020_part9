@@ -37,6 +37,7 @@ router.post('/:id/entries', (req, res) => {
 
       const newEntry : Entry | undefined = patientService.addEntry(patient,body);
 
+      console.log(newEntry);
       if (newEntry !== undefined) {
         res.json(newEntry);
       }

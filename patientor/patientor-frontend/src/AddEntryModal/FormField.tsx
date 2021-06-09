@@ -1,11 +1,11 @@
 import React from "react";
 import { ErrorMessage, Field, FieldProps, FormikProps } from "formik";
 import { Dropdown, DropdownProps, Form } from "semantic-ui-react";
-import { Diagnosis, Gender } from "../types";
+import { Diagnosis, EntryTypes } from "../types";
 
 // structure of a single option
-export type GenderOption = {
-  value: Gender;
+export type EntryOption = {
+  value: EntryTypes;
   label: string;
 };
 
@@ -13,7 +13,7 @@ export type GenderOption = {
 type SelectFieldProps = {
   name: string;
   label: string;
-  options: GenderOption[];
+  options: EntryOption[];
 };
 
 export const SelectField = ({
@@ -78,7 +78,7 @@ export const DiagnosisSelection = ({
   setFieldValue,
   setFieldTouched
 }: {
-  diagnoses: Diagnosis[];
+  diagnoses: (Diagnosis | undefined)[];
   setFieldValue: FormikProps<{ diagnosisCodes: string[] }>["setFieldValue"];
   setFieldTouched: FormikProps<{ diagnosisCodes: string[] }>["setFieldTouched"];
 }) => {
@@ -91,11 +91,11 @@ export const DiagnosisSelection = ({
     setFieldValue(field, data.value);
   };
 
-  const stateOptions = diagnoses.map(diagnosis => ({
+  const stateOptions = diagnoses.map(diagnosis => diagnosis !== undefined ? ({
     key: diagnosis.code,
     text: `${diagnosis.name} (${diagnosis.code})`,
     value: diagnosis.code
-  }));
+  }) : { key: "", text: "", value:""});
 
   return (
     <Form.Field>
