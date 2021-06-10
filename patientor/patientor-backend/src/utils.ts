@@ -126,7 +126,7 @@ export const isValidEntry = (element : Entry) : element is Entry => {
     }
 
     if (!result)
-        throw new Error('Entry is not valid: ' + element);
+        throw new Error('Entry is not valid: ' + JSON.stringify(element));
 
     return result;
 };
