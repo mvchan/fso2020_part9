@@ -64,8 +64,9 @@ const PatientDetail = () => {
 
           closeModal();
         } catch (e) {
-          console.error(e.response?.data || 'Unknown Error');
-          setError(e.response?.data?.error || 'Unknown error');
+            console.log(e.response);
+            console.error(e.response?.data || 'Unknown Error');
+            setError(e.response?.data || 'Unknown error');
         }
     };
     // END MODAL CODE

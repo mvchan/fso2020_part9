@@ -90,69 +90,75 @@ const isValidEntries = (param : any) : param is Entry[] => {
 
 export const isValidEntry = (element : Entry) : element is Entry => {
 
-    let result = true;
-
     if (!Object.values(EntryTypes).includes(element.type)) {
-        result = result && false;
+        return false;
     }
-        
-    result = result && isString(element.id) &&
-        isString(element.description) &&
-        isDate(element.date) &&
-        isString(element.specialist) &&
-        (element.diagnosisCodes ? isDiagnosisCodes(element.diagnosisCodes) : true);
+
+    parseString(element.id);
+    parseString(element.description);
+    parseDate(element.date);
+    parseString(element.specialist);
+
+    if (element.diagnosisCodes) {
+        parseDiagnosisCodes(element.diagnosisCodes);
+    }
+
+    parseEntryType(element.type);
 
     switch (element.type) {
         case "Hospital":
-            result = result &&
-                isEntryType(element.type) &&
-                isString(element.discharge.date) &&
-                isString(element.discharge.criteria);
+            parseString(element.discharge.date);
+            parseString(element.discharge.criteria);
             break;
         case "HealthCheck":
-            result = result &&
-                isEntryType(element.type) &&
-                isHealthCheckRating(element.healthCheckRating);
+            parseHealthCheckRating(element.healthCheckRating);
             break;
         case "OccupationalHealthcare":
-            result = result &&
-                isEntryType(element.type) &&
-                isString(element.employerName) &&
-                isString(element.employerName) &&
-                (element.sickLeave ? isSickLeave(element.sickLeave) : true);
+            parseString(element.employerName);
+            if (element.sickLeave) {
+                parseSickLeave(element.sickLeave);
+            }
             break;
         default:
-            result = false;
+            return false;
     }
 
-    if (!result)
-        throw new Error('Entry is not valid: ' + JSON.stringify(element));
+    // if (!result)
+    //     throw new Error('Entry is not valid: ' + JSON.stringify(element));
 
-    return result;
+    return true;
 };
 
-// const parseEntryTypes = (entryType : unknown): EntryTypes => {
-//     if (!entryType || !isEntryType(entryType)) {
-//         throw new Error('Incorrect or missing entry type: ' + entryType);
-//     }
-//     return entryType;
-// };
+const parseEntryType = (entryType : unknown): EntryTypes => {
+    if (!entryType || !isEntryType(entryType)) {
+        throw new Error('Incorrect or missing entry type: ' + entryType);
+    }
+    return entryType;
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isEntryType = (param : any) : param is EntryTypes => {
     return Object.values(EntryTypes).includes(param);
 };
 
-// const parseDiagnosisCodes = (codes : unknown) : string[] => {
-//     if (!codes || !isDiagnosisCodes(codes)) {
-//         throw new Error('Incorrect or missing diagnosis codes: ' + codes);
-//     }
+const parseDiagnosisCodes = (codes : unknown) : string[] => {
+    if (!codes || !isDiagnosisCodes(codes)) {
+        throw new Error('Incorrect or missing diagnosis codes: ' + codes);
+    }
 
-//     return codes;
-// };
+    return codes;
+};
 
 const isDiagnosisCodes = (param : unknown) : param is string[] => {
     return Array.isArray(param);
+};
+
+const parseHealthCheckRating = (rating : unknown) : HealthCheckRating => {
+    if (rating === undefined || !isHealthCheckRating(rating)) {
+        throw new Error('Incorrect or missing health check rating: ' + rating);
+    }
+
+    return rating;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -163,6 +169,14 @@ const isHealthCheckRating = (param : any) : param is HealthCheckRating => {
 type SickLeave = {
     startDate : string,
     endDate : string
+};
+
+const parseSickLeave = (leave : unknown) : SickLeave => {
+    if (!leave || !isSickLeave(leave)) {
+        throw new Error('Incorrect or missing sick leave: ' + leave);
+    }
+
+    return leave;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -30,6 +30,7 @@ router.post('/', (req, res) => {
 });
 
 router.post('/:id/entries', (req, res) => {
+  try {
     const patient = patientService.findById(req.params.id);
 
     if (patient) {
@@ -46,6 +47,11 @@ router.post('/:id/entries', (req, res) => {
     } else {
       res.sendStatus(404);
     }
+  } catch (e) {
+      console.log('Error encountered');
+      res.status(400).send(e.message);
+      //res.sendStatus(400);
+  }
 });
 
 export default router;
