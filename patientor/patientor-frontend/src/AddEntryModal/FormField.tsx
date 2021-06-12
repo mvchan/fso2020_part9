@@ -25,8 +25,8 @@ export const SelectField = ({
     <label>{label}</label>
     <Field as="select" name={name} className="ui dropdown">
       {options.map(option => (
-        <option key={option.value} value={option.value}>
-          {option.label || option.value}
+        <option key={option.value} value={option.label}>
+          {option.label}
         </option>
       ))}
     </Field>
