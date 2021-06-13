@@ -90,10 +90,6 @@ const isValidEntries = (param : any) : param is Entry[] => {
 
 export const isValidEntry = (element : Entry) : element is Entry => {
 
-    if (!Object.values(EntryTypes).includes(element.type)) {
-        return false;
-    }
-
     parseString(element.id);
     parseString(element.description);
     parseDate(element.date);
@@ -107,7 +103,7 @@ export const isValidEntry = (element : Entry) : element is Entry => {
 
     switch (element.type) {
         case "Hospital":
-            parseString(element.discharge.date);
+            parseDate(element.discharge.date);
             parseString(element.discharge.criteria);
             break;
         case "HealthCheck":
@@ -123,15 +119,12 @@ export const isValidEntry = (element : Entry) : element is Entry => {
             return false;
     }
 
-    // if (!result)
-    //     throw new Error('Entry is not valid: ' + JSON.stringify(element));
-
     return true;
 };
 
 const parseEntryType = (entryType : unknown): EntryTypes => {
     if (!entryType || !isEntryType(entryType)) {
-        throw new Error('Incorrect or missing entry type: ' + entryType);
+        throw new Error('Incorrect or missing entry type: ' + JSON.stringify(entryType));
     }
     return entryType;
 };
@@ -143,7 +136,7 @@ const isEntryType = (param : any) : param is EntryTypes => {
 
 const parseDiagnosisCodes = (codes : unknown) : string[] => {
     if (!codes || !isDiagnosisCodes(codes)) {
-        throw new Error('Incorrect or missing diagnosis codes: ' + codes);
+        throw new Error('Incorrect diagnosis codes: ' + codes);
     }
 
     return codes;
@@ -155,7 +148,7 @@ const isDiagnosisCodes = (param : unknown) : param is string[] => {
 
 const parseHealthCheckRating = (rating : unknown) : HealthCheckRating => {
     if (rating === undefined || !isHealthCheckRating(rating)) {
-        throw new Error('Incorrect or missing health check rating: ' + rating);
+        throw new Error('Incorrect or missing health check rating: ' + JSON.stringify(rating));
     }
 
     return rating;
@@ -173,7 +166,7 @@ type SickLeave = {
 
 const parseSickLeave = (leave : unknown) : SickLeave => {
     if (!leave || !isSickLeave(leave)) {
-        throw new Error('Incorrect or missing sick leave: ' + leave);
+        throw new Error('Incorrect or missing sick leave start or end: ' + JSON.stringify(leave));
     }
 
     return leave;
@@ -181,6 +174,11 @@ const parseSickLeave = (leave : unknown) : SickLeave => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isSickLeave = (param : any) : param is SickLeave => {
+    if (!isDate(param.startDate)) {
+        throw new Error('Sick leave start date is missing or invalid: (' + param.startDate + ')');
+    } else if (!isDate(param.endDate)) {
+        throw new Error('Sick leave end date is missing or invalid: (' + param.endDate + ')');
+    }
     return isDate(param.startDate) && isDate(param.endDate);
 };
 

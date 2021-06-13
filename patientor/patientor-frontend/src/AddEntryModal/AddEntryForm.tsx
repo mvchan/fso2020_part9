@@ -28,6 +28,63 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
 
   const [{ diagnoses },] = useStateValue();
 
+  const additionalEntryInfo = (type : string) => {
+    switch(type) {
+      case 'HealthCheck':
+        return (
+          <>
+            <Field
+              label="Health Check Rating"
+              name="healthCheckRating"
+              component={NumberField}
+              min={0}
+              max={3}
+            />
+          </>
+        );
+      case 'OccupationalHealthcare':
+        return (
+          <>
+            <Field
+              label="Employer Name"
+              placeholder="Employer Name"
+              name="employerName"
+              component={TextField}
+            />
+            <Field
+              label="Sick Leave Start Date (Optional)"
+              placeholder="YYYY-MM-DD"
+              name="sickLeave.startDate"
+              component={TextField}
+            />
+            <Field
+              label="Sick Leave End Date (Optional)"
+              placeholder="YYYY-MM-DD"
+              name="sickLeave.endDate"
+              component={TextField}
+            />
+          </>
+        );
+      case 'Hospital':
+        return (
+          <>
+            <Field
+              label="Discharge Date"
+              placeholder="YYYY-MM-DD"
+              name="discharge.date"
+              component={TextField}
+            />
+            <Field
+              label="Criteria"
+              name="discharge.criteria"
+              component={TextField}
+            />
+          </>
+        );
+      default:
+    }
+  };
+
   return (
     <Formik
       initialValues={{
@@ -41,7 +98,9 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
       onSubmit={onSubmit}
       validate={values => {
         const requiredError = "Field is required";
-        const errors: { [field: string]: string } = {};
+
+        // index type expanded to union with object containing index to accommodate subfields (i.e. sickLeave, discharge)
+        const errors: { [field: string]: string | { [field:string] : string } } = {};
         if (!values.description) {
           errors.description = requiredError;
         }
@@ -54,10 +113,44 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
         if (!values.type) {
           errors.type = requiredError;
         }
+        
+        // the respective errors will only appear per field since the states update independently despite being grouped together
+        // i.e. the sick leave dates will not display required until after each input field has been clicked through
+        switch (values.type) {
+          case 'HealthCheck':
+            if (!values.healthCheckRating)
+              errors.healthCheckRating = requiredError;
+            break;
+          case 'OccupationalHealthcare':
+            if (!values.employerName)
+              errors.employerName = requiredError;
+            if ((values.sickLeave?.startDate || values.sickLeave?.endDate) && (!values.sickLeave?.startDate || !values.sickLeave?.endDate)) {
+              errors.sickLeave = {
+                startDate : requiredError,
+                endDate : requiredError
+              };
+            }
+            break;
+          case 'Hospital':
+            if (!values.discharge) {
+              errors.discharge = {
+                date : requiredError,
+                criteria : requiredError
+              };
+            }
+            break;
+          default:
+          
+        }
         return errors;
       }}
     >
-      {({ isValid, dirty, setFieldValue, setFieldTouched }) => {
+      {({ isValid, dirty, setFieldValue, setFieldTouched, values }) => {
+
+        // The Formik state is handled through the 'values' prop.
+        // It is set implicitly by subcomponents through the 'name' field.
+        // For example, SelectField assigns values.type to the value of the selected option.
+
         return (
           <Form className="form ui">
             <Field
@@ -78,23 +171,17 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
               name="specialist"
               component={TextField}
             />
+            <DiagnosisSelection
+              setFieldValue={setFieldValue}
+              setFieldTouched={setFieldTouched}
+              diagnoses={Object.values(diagnoses)}
+            />
             <SelectField
               label="Type"
               name="type"
               options={entryOptions}
             />
-            <DiagnosisSelection
-              setFieldValue={setFieldValue}
-              setFieldTouched={setFieldTouched}
-              diagnoses={Object.values(diagnoses)}
-            /> 
-            <Field
-              label="healthCheckRating"
-              name="healthCheckRating"
-              component={NumberField}
-              min={0}
-              max={3}
-            />
+            {additionalEntryInfo(values.type)}
             <Grid>
               <Grid.Column floated="left" width={5}>
                 <Button type="button" onClick={onCancel} color="red">
